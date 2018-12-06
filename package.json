@@ -1,10 +1,10 @@
 {
   "name": "inversify-graphql",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "Olivier Guimbal",
   "description": "Builds dependency-inverted GraphQL schemas with InversifyJS",
   "main": "bin/index.js",
-  "types": "bin/indx.d.ts",
+  "types": "bin/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "mocha -r ts-node/register test/**/*-spec.ts",
