@@ -11,7 +11,7 @@ export class Dependency {
 export class SchemaBuilder extends igql.InversifySchemaBuilder {
     @inv.inject(Dependency) dep: Dependency;
 
-    schema(): igql.InversifyGraphQLSchemaConfig {
+    schema(): igql.InversifySchemaConfig {
         return schemaDefinition;
     }
 }
@@ -33,7 +33,7 @@ export class RootQuery extends igql.InversifyObjectTypeBuilder<any, any> {
 export class PartialRoot1 extends igql.InversifyPartialMap<any, any> {
     @inv.inject(Dependency) dep: Dependency;
 
-    map(): gql.Thunk<igql.InversifyGraphQLFieldConfigMap<any, any>> {
+    map(): gql.Thunk<igql.InversifyFieldConfigMap<any, any>> {
         return {
             partial1type1: { type: Type1 }
         }
@@ -43,7 +43,7 @@ export class PartialRoot1 extends igql.InversifyPartialMap<any, any> {
 export class PartialRoot2 extends igql.InversifyPartialMap<any, any> {
     @inv.inject(Dependency) dep: Dependency;
 
-    map(): gql.Thunk<igql.InversifyGraphQLFieldConfigMap<any, any>> {
+    map(): gql.Thunk<igql.InversifyFieldConfigMap<any, any>> {
         return () => ({
             partial2type2: { type: Type2 },
             partial2String: { type: gql.GraphQLString }
@@ -82,6 +82,6 @@ export class Type2 extends igql.InversifyObjectTypeBuilder<any, any> {
 }
 
 
-export const schemaDefinition: igql.InversifyGraphQLSchemaConfig = {
+export const schemaDefinition: igql.InversifySchemaConfig = {
     query: RootQuery,
 };

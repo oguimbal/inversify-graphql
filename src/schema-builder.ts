@@ -1,8 +1,8 @@
 import * as inv from 'inversify';
-import { InversifyGraphQLSchemaConfig } from './interfaces';
+import { InversifySchemaConfig } from './interfaces';
 
 @inv.injectable()
 export abstract class InversifySchemaBuilder {
 
-    abstract schema(): InversifyGraphQLSchemaConfig;
+    abstract schema(): InversifySchemaConfig;
 }

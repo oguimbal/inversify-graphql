@@ -1,7 +1,7 @@
 import * as inv from 'inversify';
 import * as gql from 'graphql';
 import {TypeCache} from './type-cache';
-import { InversifyObjectConfig, InversifyGraphQLFieldConfigMap } from './interfaces';
+import { InversifyObjectConfig, InversifyFieldConfigMap } from './interfaces';
 
 @inv.injectable()
 export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
@@ -24,7 +24,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
 
         // resolve fields
         const cfg = this.config();
-        const buildField =  (ifcm: InversifyGraphQLFieldConfigMap<TSource, TContext>) => {
+        const buildField =  (ifcm: InversifyFieldConfigMap<TSource, TContext>) => {
             // build real type map
             const builtMap: gql.GraphQLFieldConfigMap<TSource, TContext> = {};
             Object.keys(ifcm)

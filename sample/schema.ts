@@ -1,4 +1,4 @@
-import { InversifySchemaBuilder, InversifyList, InversifyGraphQLSchemaConfig, InversifyObjectTypeBuilder, InversifyObjectConfig } from '../src';
+import { InversifySchemaBuilder, InversifyList, InversifySchemaConfig, InversifyObjectTypeBuilder, InversifyObjectConfig } from '../src';
 import { inject, injectable } from 'inversify';
 import { GraphQLInt, GraphQLString } from 'graphql';
 
@@ -26,7 +26,7 @@ export class MyDependency {
 export class SchemaBuilder extends InversifySchemaBuilder {
 
 
-    schema(): InversifyGraphQLSchemaConfig {
+    schema(): InversifySchemaConfig {
         return {
             query: MyRootQuery,
             // you could use other graphql schema config fields:
