@@ -7,9 +7,10 @@ import { InversifyPartialMap } from './partial-map';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 export interface InversifyGraphQLSchemaConfig
-    extends Omit<gql.GraphQLSchemaConfig, 'query' | 'mutation'> {
+    extends Omit<gql.GraphQLSchemaConfig, 'query' | 'mutation' | 'subscription'> {
     query?: gql.GraphQLObjectType | Maybe<inv.interfaces.Newable<InversifyObjectTypeBuilder<any, any>>>;
     mutation?: gql.GraphQLObjectType | Maybe<inv.interfaces.Newable<InversifyObjectTypeBuilder<any, any>>>;
+    subscription?: gql.GraphQLObjectType | Maybe<inv.interfaces.Newable<InversifyObjectTypeBuilder<any, any>>>;
 }
 /**
  * Inversify equivalent of GraphQLFieldConfigMap
@@ -20,7 +21,7 @@ export interface InversifyGraphQLFieldConfigMap<TSource, TContext> {
 
 export interface InversifyGraphQLFieldConfig<TSource, TContext, TArgs = { [argName: string]: any }>
     extends Omit<gql.GraphQLFieldConfig<TSource, TContext, TArgs>, 'type'> {
-    type: gql.GraphQLOutputType | inv.interfaces.Newable<InversifyObjectTypeBuilder<TSource, TContext>>;
+    type: gql.GraphQLOutputType | inv.interfaces.Newable<InversifyObjectTypeBuilder<any, TContext>>;
 }
 
 export interface InversifyObjectConfig<TSource, TContext>

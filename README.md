@@ -2,6 +2,10 @@
 
 Build dependency-inverted GraphQL schemas with [InversifyJS](https://github.com/inversify/InversifyJS)
 
+# Qucickstart
+
+See the [sample app](sample/README.md) in this repository
+
 
 # Usage
 
@@ -52,7 +56,7 @@ export class MyRootQuery extends InversifyObjectTypeBuilder<void, MyContext> {
               },
               // use InversifiedList to build a GraphQLList of an inversified type.
               inversifiedListField: {
-                type: InversifiedList(MyType),
+                type: InversifyList(MyType),
                 resolve: () => this.dependency.getWhateverList()
               }
             }

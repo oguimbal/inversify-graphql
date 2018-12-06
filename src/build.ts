@@ -26,11 +26,17 @@ export function inversifySchema(container: inv.Container, config: inv.interfaces
         builtConfig.mutation = <gql.GraphQLObjectType> builder.build();
     }
 
+    if (typeof builtConfig.subscription === 'function') {
+        const builder = thisContainer.resolve(builtConfig.subscription);
+        builtConfig.subscription = <gql.GraphQLObjectType> builder.build();
+    }
+
     // build schema
     return new gql.GraphQLSchema({
         // typescript only detects correct types doing this:
         ...builtConfig,
         mutation: builtConfig.mutation,
         query: builtConfig.query,
+        subscription: builtConfig.subscription,
     });
 }
