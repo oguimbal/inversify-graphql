@@ -24,7 +24,7 @@
     "apollo-server"
   ],
   "author": "Olivier Guimbal",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/oguimbal/inversify-graphql/issues"
   },
