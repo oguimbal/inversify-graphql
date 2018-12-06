@@ -1,5 +1,12 @@
 # inversify-graphql
 
+![build status](https://travis-ci.org/oguimbal/inversify-graphql.svg?branch=master)
+[![npm version](https://badge.fury.io/js/inversify-graphql.svg)](https://badge.fury.io/js/inversify-graphql)
+[![Dependencies](https://david-dm.org/inversify/InversifyJS.svg)](https://david-dm.org/oguimbal/inversify-graphql#info=dependencies)
+[![img](https://david-dm.org/inversify/InversifyJS/dev-status.svg)](https://david-dm.org/oguimbal/inversify-graphql/#info=devDependencies)
+[![img](https://david-dm.org/inversify/InversifyJS/peer-status.svg)](https://david-dm.org/oguimbal/inversify-graphql/#info=peerDependenciess)
+[![Known Vulnerabilities](https://snyk.io/test/github/oguimbal/inversify-graphql/badge.svg)](https://snyk.io/test/github/oguimbal/inversify-graphql)
+
 Build dependency-inverted GraphQL schemas with [InversifyJS](https://github.com/inversify/InversifyJS)
 
 # Qucickstart
