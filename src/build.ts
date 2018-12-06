@@ -1,10 +1,10 @@
 import * as inv from 'inversify';
 import * as gql from 'graphql';
-import { InversifyGraphQLSchemaBuilder } from './schema-builder';
+import { InversifySchemaBuilder } from './schema-builder';
 import { InversifyGraphQLSchemaConfig } from './interfaces';
 import { TypeCache } from './type-cache';
 
-export function inversifySchema(container: inv.Container, config: inv.interfaces.Newable<InversifyGraphQLSchemaBuilder> | InversifyGraphQLSchemaConfig): gql.GraphQLSchema {
+export function inversifySchema(container: inv.Container, config: inv.interfaces.Newable<InversifySchemaBuilder> | InversifyGraphQLSchemaConfig): gql.GraphQLSchema {
 
     // create child container
     const thisContainer = new inv.Container();

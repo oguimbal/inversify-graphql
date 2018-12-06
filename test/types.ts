@@ -8,7 +8,7 @@ export class Dependency {
 }
 
 
-export class SchemaBuilder extends igql.InversifyGraphQLSchemaBuilder {
+export class SchemaBuilder extends igql.InversifySchemaBuilder {
     @inv.inject(Dependency) dep: Dependency;
 
     schema(): igql.InversifyGraphQLSchemaConfig {
@@ -17,7 +17,7 @@ export class SchemaBuilder extends igql.InversifyGraphQLSchemaBuilder {
 }
 
 
-export class RootQuery extends igql.GraphQLObjectTypeBuilder<any, any> {
+export class RootQuery extends igql.InversifyObjectTypeBuilder<any, any> {
     
     @inv.inject(Dependency) dep: Dependency;
 
@@ -53,7 +53,7 @@ export class PartialRoot2 extends igql.InversifyPartialMap<any, any> {
 }
 
 
-export class Type1 extends igql.GraphQLObjectTypeBuilder<any, any> {
+export class Type1 extends igql.InversifyObjectTypeBuilder<any, any> {
     @inv.inject(Dependency) dep: Dependency;
 
     config(): igql.InversifyObjectConfig<any, any> {
@@ -67,7 +67,7 @@ export class Type1 extends igql.GraphQLObjectTypeBuilder<any, any> {
 }
 
 
-export class Type2 extends igql.GraphQLObjectTypeBuilder<any, any> {
+export class Type2 extends igql.InversifyObjectTypeBuilder<any, any> {
     @inv.inject(Dependency) dep: Dependency;
 
     config(): igql.InversifyObjectConfig<any, any> {

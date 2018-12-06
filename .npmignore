@@ -11,6 +11,8 @@ gulpfile.js
 bower.json
 karma.conf.js
 tsconfig.json
+tsconfig.base.json
+tsconfig.build.json
 typings.json
 CONTRIBUTING.md
 ISSUE_TEMPLATE.md

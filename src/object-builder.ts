@@ -4,7 +4,7 @@ import {TypeCache} from './type-cache';
 import { InversifyObjectConfig, InversifyGraphQLFieldConfigMap } from './interfaces';
 
 @inv.injectable()
-export abstract class GraphQLObjectTypeBuilder<TSource, TContext> {
+export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
 
     protected built: gql.GraphQLObjectType;
     protected building?: boolean;
