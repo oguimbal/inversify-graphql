@@ -30,7 +30,8 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
             Object.keys(ifcm)
                 .forEach(fieldName => {
                     const field = ifcm[fieldName];
-
+                    if (!field)
+                        return; // ignore undefined fields
                     builtMap[fieldName] = {
                         ...field,
                         type: typeof field.type === 'function'
