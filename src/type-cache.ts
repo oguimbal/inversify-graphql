@@ -1,4 +1,5 @@
 import * as inv from 'inversify';
+import { InversifyPartialMap } from './partial-map';
 
 /**
  * Holds singletons of all builders
@@ -13,3 +14,4 @@ export class TypeCache {
         return this.container.get(ctor);
     }
 }
+

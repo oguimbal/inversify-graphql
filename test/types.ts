@@ -1,6 +1,7 @@
 import * as inv from 'inversify';
 import * as gql from 'graphql';
 import * as igql from '../src';
+// tslint:disable: no-use-before-declare
 
 @inv.injectable()
 export class Dependency {

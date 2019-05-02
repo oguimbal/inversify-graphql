@@ -3,13 +3,25 @@ import * as gql from 'graphql';
 import {TypeCache} from './type-cache';
 import { InversifyObjectConfig, InversifyFieldConfigMap } from './interfaces';
 
+export interface IInversifyExtensibleNode {
+    buildType(): inv.interfaces.Newable<InversifyObjectTypeBuilder<any, any>>;
+}
+
+export const ExtensibleSchemaSymbol =  Symbol();
+
+export interface IExtSchema {
+    getNoCreate(extendedType: string): IInversifyExtensibleNode;
+}
+
 @inv.injectable()
 export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
 
     protected built: gql.GraphQLObjectType;
     protected building?: boolean;
+    protected ignoreExtensions: boolean;
 
     @inv.inject(TypeCache) protected builders: TypeCache;
+    @inv.inject(ExtensibleSchemaSymbol) @inv.optional() private extensible: IExtSchema;
 
     abstract config() : InversifyObjectConfig<TSource, TContext>;
 
@@ -22,8 +34,27 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
             If this is intended, please use the thunk version of 'fields' - i.e.  "fields: () => ({ /* field definition */ })`)
         this.building = true;
 
+
         // resolve fields
         const cfg = this.config();
+        
+        // load extensions
+        if (this.extensible && !this.ignoreExtensions) {
+            const extended = this.extensible.getNoCreate(cfg.name);
+            if (extended) {
+                const built = extended.buildType();
+                if (built) {
+                    const instanciated = this.builders.get(built);
+                    const extCfg = instanciated.config();
+                    for (const fname of Object.keys(extCfg.fields)) {
+                        if (fname in cfg.fields)
+                            throw new Error('Cannot merge GraphQL extensions in ' + cfg.name + ' because an extension also declares a field named ' + fname);
+                        cfg.fields[fname] = extCfg.fields[fname];
+                    }
+                }
+            }
+        }
+
         const buildField =  (ifcm: InversifyFieldConfigMap<TSource, TContext>) => {
             // build real type map
             const builtMap: gql.GraphQLFieldConfigMap<TSource, TContext> = {};

@@ -12,9 +12,11 @@ export function inversifySchema(container: inv.Container, config: inv.interfaces
     const types = new TypeCache(thisContainer);
     thisContainer.bind(TypeCache).toConstantValue(types);
 
-    const builtConfig = typeof config === 'function'
-        ? types.get(config).schema()
-        : config;
+    let builtConfig: InversifySchemaConfig;
+     if (typeof config === 'function') {
+         builtConfig = types.get(config).schema();
+     } else
+        builtConfig = config;
 
     // resolve builders
     if (typeof builtConfig.query === 'function') {

@@ -24,10 +24,31 @@ export interface InversifyFieldConfig<TSource, TContext, TArgs = { [argName: str
     type: gql.GraphQLOutputType | inv.interfaces.Newable<InversifyObjectTypeBuilder<any, TContext>>;
 }
 
+export type InversifyFieldList<TSource, TContext> = gql.Thunk<InversifyFieldConfigMap<TSource, TContext>> | inv.interfaces.Newable<InversifyPartialMap<TSource, TContext>>[];
+
 export interface InversifyObjectConfig<TSource, TContext>
     extends Omit<gql.GraphQLObjectTypeConfig<TSource, TContext>, 'fields'> {
     /**
      * Fields can be either a map, or an array of partial map builder
      */
-    fields: gql.Thunk<InversifyFieldConfigMap<TSource, TContext>> | inv.interfaces.Newable<InversifyPartialMap<TSource, TContext>>[]
+    fields: InversifyFieldList<TSource, TContext>;
+}
+
+
+export interface IInversifyExtensibleSchema<TContext = any> {
+    /** Enxtensible root query */
+    readonly query: IInversifyExtensibleNode<void, TContext>;
+    /** Enxtensible root mutation */
+    readonly mutation: IInversifyExtensibleNode<void, TContext>;
+    /** Enxtensible root subscription */
+    readonly subscription: IInversifyExtensibleNode<void, TContext>;
+    /** Get a type to extend by name */
+    get<TSource = any>(typeToExtend: string): IInversifyExtensibleNode<TSource, TContext>;
+    /** Build the generated schema */
+    build(): gql.GraphQLSchema;
+}
+
+export interface IInversifyExtensibleNode<TSource = any, TContext = any> {
+    /** Merge the given field list definitions in the current node */
+    merge(...fields: inv.interfaces.Newable<InversifyPartialMap<TSource, TContext>>[]): this
 }
