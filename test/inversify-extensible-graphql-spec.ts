@@ -27,6 +27,19 @@ describe('graphql-inversify-extensible', () => {
         expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
     })
 
+    it('concatenates schemas', () => {
+        builder.query.merge(PartialRoot1);
+        const builder2 = extensibleSchema('XX', container);
+        builder.concat(builder2);
+        builder2.query.merge(PartialRoot2);
+
+        const schema = builder.build();
+        const rootQuery = schema.getQueryType();
+        const fields = rootQuery.getFields();
+        const keys = Object.keys(fields);
+        expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
+    })
+    
     it('builds schema from builder', () => {
         builder.query.merge(PartialRoot1, PartialRoot2);
         const schema = builder.build();

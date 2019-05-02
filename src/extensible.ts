@@ -12,6 +12,7 @@ export class InversifyExtensibleNode<TSource = any, TContext = any> implements I
 
     private readonly extensions: interfaces.Newable<InversifyPartialMap<any, TContext>>[] = [];
     private typeName: string;
+    useParentExtensions = false;
     for (name: string) {
         this.typeName = name;
         return this;
@@ -24,6 +25,7 @@ export class InversifyExtensibleNode<TSource = any, TContext = any> implements I
         return this;
     }
 
+
     buildType(): interfaces.Newable<InversifyObjectTypeBuilder<any, any>> {
         if (!this.extensions.length)
             return null;
@@ -34,7 +36,7 @@ export class InversifyExtensibleNode<TSource = any, TContext = any> implements I
 
             constructor() {
                 super();
-                super.ignoreExtensions = true;
+                super.extensions = that.useParentExtensions ? 'noDirect' : 'none';
             }
 
             config(): InversifyObjectConfig<TSource, TContext> {const names = new Set();
@@ -68,6 +70,7 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
     readonly subscription: InversifyExtensibleNode<void, TContext>;
     readonly nodes = new Map<string, InversifyExtensibleNode<any, TContext>>();
     private container: Container;
+    private parents:  this[] = [];
 
     constructor(name: string, container: Container) {
         const c = this.container = new Container();
@@ -78,6 +81,9 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
         this.query = this.get(name + 'Queries');
         this.mutation = this.get(name + 'Mutations');
         this.subscription = this.get(name + 'Subscriptions');
+        for (const q of [this.query, this.mutation, this.subscription]) {
+            q.useParentExtensions = true;
+        }
     }
 
     private create(typeName: string) {
@@ -92,10 +98,21 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
         return node;
     }
 
-    getNoCreate<TSource = any>(extendedType: string): InversifyExtensibleNode<TSource, TContext>  {
-        return this.nodes.get(extendedType);
+    getNoCreate<TSource = any>(extendedType: string, which: 'all' | 'noDirect' | 'none'): InversifyExtensibleNode<TSource, TContext>[] {
+        if (which === 'none')
+            return [];
+        const ret = which === 'noDirect'
+            ? []
+            : [this.nodes.get(extendedType)];
+        for (const p of this.parents)
+            ret.push(...p.getNoCreate(extendedType, 'all'));
+        return ret.filter(x => !!x);
     }
 
+    concat(...otherSchema: this[]): this {
+        this.parents.push(...otherSchema);
+        return this;
+    }
 
     build(): GraphQLSchema {
 

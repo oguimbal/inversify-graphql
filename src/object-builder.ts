@@ -10,7 +10,7 @@ export interface IInversifyExtensibleNode {
 export const ExtensibleSchemaSymbol =  Symbol();
 
 export interface IExtSchema {
-    getNoCreate(extendedType: string): IInversifyExtensibleNode;
+    getNoCreate(extendedType: string, which: 'all' | 'noDirect' | 'none'): IInversifyExtensibleNode[];
 }
 
 @inv.injectable()
@@ -18,7 +18,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
 
     protected built: gql.GraphQLObjectType;
     protected building?: boolean;
-    protected ignoreExtensions: boolean;
+    protected extensions: 'all' | 'noDirect' | 'none'  = 'all';
 
     @inv.inject(TypeCache) protected builders: TypeCache;
     @inv.inject(ExtensibleSchemaSymbol) @inv.optional() private extensible: IExtSchema;
@@ -39,9 +39,9 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
         const cfg = this.config();
         
         // load extensions
-        if (this.extensible && !this.ignoreExtensions) {
-            const extended = this.extensible.getNoCreate(cfg.name);
-            if (extended) {
+        if (this.extensible) {
+            const extList = this.extensible.getNoCreate(cfg.name, this.extensions);
+            for (const extended of extList) {
                 const built = extended.buildType();
                 if (built) {
                     const instanciated = this.builders.get(built);
