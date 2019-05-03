@@ -11,7 +11,7 @@ import { InversifySchemaBuilder } from './schema-builder';
 export class InversifyExtensibleNode<TSource = any, TContext = any> implements IInversifyExtensibleNode {
 
     private readonly extensions: interfaces.Newable<InversifyPartialMap<any, TContext>>[] = [];
-    private typeName: string;
+    typeName: string;
     useParentExtensions = false;
     for (name: string) {
         this.typeName = name;
@@ -69,7 +69,7 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
     readonly mutation: InversifyExtensibleNode<void, TContext>;
     readonly subscription: InversifyExtensibleNode<void, TContext>;
     readonly nodes = new Map<string, InversifyExtensibleNode<any, TContext>>();
-    private container: Container;
+    container: Container;
     private parents:  this[] = [];
 
     constructor(name: string, container: Container) {
@@ -106,6 +106,12 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
             : [this.nodes.get(extendedType)];
         for (const p of this.parents)
             ret.push(...p.getNoCreate(extendedType, 'all'));
+        for (const q of ['query', 'mutation', 'subscription']) {
+            if (this[q].typeName === extendedType) {
+                for (const p of this.parents)
+                    ret.push(p[q]);
+            }
+        }
         return ret.filter(x => !!x);
     }
 

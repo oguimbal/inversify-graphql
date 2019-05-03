@@ -29,7 +29,7 @@ describe('graphql-inversify-extensible', () => {
 
     it('concatenates schemas', () => {
         builder.query.merge(PartialRoot1);
-        const builder2 = extensibleSchema('XX', container);
+        const builder2 = extensibleSchema('YY', container);
         builder.concat(builder2);
         builder2.query.merge(PartialRoot2);
 
