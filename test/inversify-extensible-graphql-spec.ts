@@ -34,10 +34,23 @@ describe('graphql-inversify-extensible', () => {
         builder2.query.merge(PartialRoot2);
 
         const schema = builder.build();
+        const schema2 = builder2.build();
+
         const rootQuery = schema.getQueryType();
         const fields = rootQuery.getFields();
         const keys = Object.keys(fields);
         expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
+
+
+        const rootQuery2 = schema2.getQueryType();
+        const fields2 = rootQuery2.getFields();
+        const keys2 = Object.keys(fields2);
+        expect(keys2.length).to.equal(2, 'Expecting 3 fields on root');
+        
+        
+        const type2_1 = <gql.GraphQLObjectType> fields.partial2type2.type;
+        const type2_2 = <gql.GraphQLObjectType> fields2.partial2type2.type;
+        expect(type2_1 === type2_2).to.equal(false, 'Should have rebuilt this type');
     })
     
     it('builds schema from builder', () => {

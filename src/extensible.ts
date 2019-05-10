@@ -45,8 +45,8 @@ export class InversifyExtensibleNode<TSource = any, TContext = any> implements I
                     if (typeof thisMap === 'function')
                         thisMap = thisMap();
                     for (const fname of Object.keys(thisMap)) {
-                        if (names.has(fname))
-                            throw new Error('Cannot merge GraphQL type ' + that.typeName + ' because two different extensions are declaring a field named ' + fname);
+                        // if (names.has(fname))
+                        //     throw new Error('Cannot merge GraphQL type ' + that.typeName + ' because two different extensions are declaring a field named ' + fname);
                         names.add(fname);
                         this._globalMap[fname] = thisMap[fname];
                     }

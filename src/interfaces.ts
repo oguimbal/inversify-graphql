@@ -36,6 +36,9 @@ export interface InversifyObjectConfig<TSource, TContext>
 
 
 export interface IInversifyExtensibleSchema<TContext = any> {
+
+    /** The child container of this schema */
+    readonly container: inv.Container;
     /** Enxtensible root query */
     readonly query: IInversifyExtensibleNode<void, TContext>;
     /** Enxtensible root mutation */

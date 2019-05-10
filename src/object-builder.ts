@@ -46,10 +46,22 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
                 if (built) {
                     const instanciated = this.builders.get(built);
                     const extCfg = instanciated.config();
-                    for (const fname of Object.keys(extCfg.fields)) {
-                        if (fname in cfg.fields)
-                            throw new Error('Cannot merge GraphQL extensions in ' + cfg.name + ' because an extension also declares a field named ' + fname);
-                        cfg.fields[fname] = extCfg.fields[fname];
+                    if (typeof cfg.fields === 'function') {
+                        const cpy = cfg.fields;
+                        cfg.fields = () => ({
+                            ...cpy(),
+                            ...extCfg.fields,
+                        })
+                    } else {
+                        cfg.fields = {
+                            ...cfg.fields,
+                            ...extCfg.fields,
+                        }
+                        // for (const fname of Object.keys(extCfg.fields)) {
+                        //     if (fname in cfg.fields)
+                        //         throw new Error('Cannot merge GraphQL extensions in ' + cfg.name + ' because an extension also declares a field named ' + fname);
+                        //     cfg.fields[fname] = extCfg.fields[fname];
+                        // }
                     }
                 }
             }
