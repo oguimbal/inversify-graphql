@@ -36,7 +36,8 @@ export class PartialRoot1 extends igql.InversifyPartialMap<any, any> {
 
     map(): gql.Thunk<igql.InversifyFieldConfigMap<any, any>> {
         return {
-            partial1type1: { type: Type1 }
+            partial1type1: { type: Type1 },
+            deep: {type: DeepType}
         }
     }
 
@@ -82,6 +83,34 @@ export class Type2 extends igql.InversifyObjectTypeBuilder<any, any> {
     }
 }
 
+
+
+export class DeepType extends igql.InversifyObjectTypeBuilder<any, any> {
+    @inv.inject(Dependency) dep: Dependency;
+
+    config(): igql.InversifyObjectConfig<any, any> {
+        return {
+            name: 'DeepType',
+            fields: {
+                nested: {
+                    type: {
+                        name: 'NestedDeep',
+                        fields: {
+                            subnested: {
+                                type: {
+                                    name: 'SubnestedDeep',
+                                    fields: {
+                                        prop: { type: gql.GraphQLString },
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        }
+    }
+}
 
 export const schemaDefinition: igql.InversifySchemaConfig = {
     query: RootQuery,

@@ -24,7 +24,7 @@ describe('graphql-inversify-extensible', () => {
         const rootQuery = schema.getQueryType();
         const fields = rootQuery.getFields();
         const keys = Object.keys(fields);
-        expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
+        expect(keys.length).to.equal(4, 'Expecting 3 fields on root');
     })
 
     it('concatenates schemas', () => {
@@ -39,7 +39,7 @@ describe('graphql-inversify-extensible', () => {
         const rootQuery = schema.getQueryType();
         const fields = rootQuery.getFields();
         const keys = Object.keys(fields);
-        expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
+        expect(keys.length).to.equal(4, 'Expecting 3 fields on root');
 
 
         const rootQuery2 = schema2.getQueryType();
@@ -62,8 +62,8 @@ describe('graphql-inversify-extensible', () => {
         // check root type
         let fields = rootQuery.getFields();
         const keys = Object.keys(fields);
-        expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
-        expect(keys).to.deep.equal(['partial1type1', 'partial2type2', 'partial2String'])
+        expect(keys.length).to.equal(4, 'Expecting 3 fields on root');
+        expect(keys).to.deep.equal(['partial1type1', 'deep', 'partial2type2', 'partial2String'])
         expect(fields.partial1type1.type).to.be.instanceof(gql.GraphQLObjectType);
         expect(fields.partial2type2.type).to.be.instanceof(gql.GraphQLObjectType);
         expect(fields.partial2String.type).to.equal(gql.GraphQLString);
@@ -104,8 +104,8 @@ describe('graphql-inversify-extensible', () => {
         // check root type
         let fields = rootQuery.getFields();
         const keys = Object.keys(fields);
-        expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
-        expect(keys).to.deep.equal(['partial1type1', 'partial2type2', 'partial2String'])
+        expect(keys.length).to.equal(4, 'Expecting 3 fields on root');
+        expect(keys).to.deep.equal(['partial1type1', 'deep', 'partial2type2', 'partial2String'])
         expect(fields.partial1type1.type).to.be.instanceof(gql.GraphQLObjectType);
         expect(fields.partial2String.type).to.equal(gql.GraphQLString);
 

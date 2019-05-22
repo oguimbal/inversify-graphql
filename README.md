@@ -86,3 +86,61 @@ export class MyType extends InversifyObjectTypeBuilder<MyEntity, MyContext> {
     }
 }
 ```
+
+# Simple inline type definition
+
+You can define sub-types "inline" (cleaner syntax)
+
+```
+```typescript
+export class MyType extends InversifyObjectTypeBuilder<MyEntity, MyContext> {
+    
+    // Injected dependency, usable in our resolve() function
+    @inject(MyDependency) dependency: MyDependency;
+
+    config(): InversifyObjectConfig<MyEntity, MyContext> {
+      return {
+        myField: {
+          // resolver
+          resolve: () => 42,
+          // inline type definition
+          type: {
+            name: 'MyInlineType',
+            fields: {
+              subField: {
+                type: GraphQLString,
+                resolve: x => x + 'is the answer', // will output "42 is the answer"
+              }
+            }
+          }
+        }
+      }
+    }
+}
+```
+
+# Modular schema definiton
+
+Some type definitions can tend to be bloated as your app grows.
+In these cases, you might want to split the definition of types in several files or parts of your application.
+
+This is the purpose of "extensible schema", which builds on top of inversify-graphql to enable you to define a more modular schema.
+
+```typescript
+
+const adminSchema = extensibleSchema('RootName', container);
+
+// those two partial roots will be merged in the schema root
+adminSchema.query.merge(PartialRoot1);
+adminSchema.query.merge(PartialRoot2);
+adminSchema.mutation.merge(PartialMutationRoot2);
+
+// extend a type
+// the type 'MyTypeToExtend' will augmented with all the fields defined in MyPartialMap
+// nb: this will work even if 'MyTypeToExtend' has not been defined yet
+adminSchema.get('MyTypeToExtend').merge(MyPartialMap);
+
+// you can concatenate two schemas:
+// this will augment the root of "adminSchema" with everything defined in "userSchma"
+adminSchema.concat(userSchma);
+```

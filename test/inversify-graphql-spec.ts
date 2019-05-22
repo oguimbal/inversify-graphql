@@ -21,7 +21,7 @@ describe('graphql-inversify', () => {
         const rootQuery = schema.getQueryType();
         const fields = rootQuery.getFields();
         const keys = Object.keys(fields);
-        expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
+        expect(keys.length).to.equal(4, 'Expecting 3 fields on root');
     })
 
     it('builds schema from builder', () => {
@@ -31,8 +31,8 @@ describe('graphql-inversify', () => {
         // check root type
         let fields = rootQuery.getFields();
         const keys = Object.keys(fields);
-        expect(keys.length).to.equal(3, 'Expecting 3 fields on root');
-        expect(keys).to.deep.equal(['partial1type1', 'partial2type2', 'partial2String'])
+        expect(keys.length).to.equal(4, 'Expecting 3 fields on root');
+        expect(keys).to.deep.equal(['partial1type1', 'deep', 'partial2type2', 'partial2String'])
         expect(fields.partial1type1.type).to.be.instanceof(gql.GraphQLObjectType);
         expect(fields.partial2type2.type).to.be.instanceof(gql.GraphQLObjectType);
         expect(fields.partial2String.type).to.equal(gql.GraphQLString);
@@ -54,4 +54,24 @@ describe('graphql-inversify', () => {
         expect(fields.type1.type).to.equal(type1);
 
     })
+
+    
+
+    it('builds deep object', () => {
+        const schema = inversifySchema(container, schemaDefinition);
+        const rootQuery = schema.getQueryType();
+        const fields = rootQuery.getFields();
+        const keys = Object.keys(fields);
+        
+        const t1 = <gql.GraphQLObjectType> fields.deep.type;
+        const f1 = t1.getFields();
+        expect(Object.keys(f1)).to.deep.equal(['nested']);
+        const t2 = <gql.GraphQLObjectType> f1.nested.type;
+        const f2 = t2.getFields();
+        expect(Object.keys(f2)).to.deep.equal(['subnested']);
+        const t3 = <gql.GraphQLObjectType> f2.subnested.type;
+        const f3 = t3.getFields();
+        expect(Object.keys(f3)).to.deep.equal(['prop']);
+    })
+
 });

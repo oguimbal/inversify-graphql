@@ -13,6 +13,7 @@ export interface IExtSchema {
     getNoCreate(extendedType: string, which: 'all' | 'noDirect' | 'none'): IInversifyExtensibleNode[];
 }
 
+
 @inv.injectable()
 export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
 
@@ -75,11 +76,23 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
                     const field = ifcm[fieldName];
                     if (!field)
                         return; // ignore undefined fields
+                    let type: gql.GraphQLOutputType;
+                    if (typeof field.type === 'function') {
+                        type = this.builders.get(field.type).build();
+                    } else if ('inspect' in field.type) {
+                        type = field.type;
+                    } else {
+                        const fieldCfg = field.type;
+                        class InlineType extends InversifyObjectTypeBuilder<any, any> {
+                            config(): InversifyObjectConfig<any, any> {
+                                return fieldCfg;
+                            }
+                        }
+                        type = this.builders.get(InlineType).build();
+                    }
                     builtMap[fieldName] = {
                         ...field,
-                        type: typeof field.type === 'function'
-                            ? this.builders.get(field.type).build()
-                            : field.type,
+                        type: type,
                     };
                 });
             return builtMap;

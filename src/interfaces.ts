@@ -19,9 +19,11 @@ export interface InversifyFieldConfigMap<TSource, TContext> {
     [key: string]: InversifyFieldConfig<TSource, TContext>;
 }
 
+export type InversifyInlineType<TContext> = InversifyObjectConfig<any, TContext>;
+
 export interface InversifyFieldConfig<TSource, TContext, TArgs = { [argName: string]: any }>
     extends Omit<gql.GraphQLFieldConfig<TSource, TContext, TArgs>, 'type'> {
-    type: gql.GraphQLOutputType | inv.interfaces.Newable<InversifyObjectTypeBuilder<any, TContext>>;
+    type: gql.GraphQLOutputType | InversifyInlineType<TContext> | inv.interfaces.Newable<InversifyObjectTypeBuilder<any, TContext>>;
 }
 
 export type InversifyFieldList<TSource, TContext> = gql.Thunk<InversifyFieldConfigMap<TSource, TContext>> | inv.interfaces.Newable<InversifyPartialMap<TSource, TContext>>[];
