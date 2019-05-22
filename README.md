@@ -91,7 +91,6 @@ export class MyType extends InversifyObjectTypeBuilder<MyEntity, MyContext> {
 
 You can define sub-types "inline" (cleaner syntax)
 
-```
 ```typescript
 export class MyType extends InversifyObjectTypeBuilder<MyEntity, MyContext> {
     
