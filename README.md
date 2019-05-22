@@ -9,7 +9,7 @@
 
 Build dependency-inverted GraphQL schemas with [InversifyJS](https://github.com/inversify/InversifyJS)
 
-# Qucickstart
+# Quickstart
 
 See the [sample app](sample/README.md) in this repository
 
