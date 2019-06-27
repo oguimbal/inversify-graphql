@@ -36,8 +36,21 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
         this.building = true;
 
 
-        // resolve fields
-        const cfg = this.config();
+        // resolve fields, and
+        // deep copy item (this.config() might return a constant => must not be modified)
+        const cfg = {...this.config() };
+        if (typeof cfg.fields === 'function') {
+            const cpy = cfg.fields;
+            cfg.fields = () => ({
+                ...cpy()
+            });
+        } else if (cfg.fields instanceof Array) {
+            cfg.fields = [...cfg.fields];
+        } else {
+            cfg.fields = {
+                ...cfg.fields,
+            };
+        }
         
         // load extensions
         if (this.extensible) {

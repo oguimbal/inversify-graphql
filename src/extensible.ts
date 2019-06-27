@@ -6,6 +6,7 @@ import { IInversifyExtensibleNode, InversifyObjectTypeBuilder, ExtensibleSchemaS
 import { TypeCache } from './type-cache';
 import { InversifyObjectConfig, InversifyFieldList, InversifySchemaConfig, IInversifyExtensibleSchema } from './interfaces';
 import { InversifySchemaBuilder } from './schema-builder';
+import { named } from './utils';
 
 @injectable()
 export class InversifyExtensibleNode<TSource = any, TContext = any> implements IInversifyExtensibleNode {
@@ -32,36 +33,36 @@ export class InversifyExtensibleNode<TSource = any, TContext = any> implements I
         // create a temp class
         const that = this;
         class Temp extends InversifyObjectTypeBuilder<TSource, TContext> {
-            private _globalMap: InversifyFieldList<TSource, TContext> = {};
-
             constructor() {
                 super();
                 super.extensions = that.useParentExtensions ? 'noDirect' : 'none';
             }
 
-            config(): InversifyObjectConfig<TSource, TContext> {const names = new Set();
+            config(): InversifyObjectConfig<TSource, TContext> {
+                const fieldsMap: InversifyFieldList<TSource, TContext> = {};
+
+                // augment fields with extensions
                 for (const ext of that.extensions) {
                     let thisMap = this.builders.get(ext).map();
                     if (typeof thisMap === 'function')
                         thisMap = thisMap();
                     for (const fname of Object.keys(thisMap)) {
-                        // if (names.has(fname))
-                        //     throw new Error('Cannot merge GraphQL type ' + that.typeName + ' because two different extensions are declaring a field named ' + fname);
-                        names.add(fname);
-                        this._globalMap[fname] = thisMap[fname];
+                        fieldsMap[fname] = thisMap[fname];
                     }
                 }
+
+                // return the type
                 return {
                     name: that.typeName,
-                    fields: this._globalMap,
+                    fields: fieldsMap,
                 };
             }
-
         }
-        // return it
-        return Temp;
+
+        return named(Temp, this.typeName + '_Extensible');
     }
 }
+
 
 
 export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
@@ -93,7 +94,7 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
 
     get<TSource = any>(typeToExtend: string): InversifyExtensibleNode<TSource, TContext> {
         let node = this.nodes.get(typeToExtend);
-        if (!this.nodes.has(typeToExtend))
+        if (!node)
             this.nodes.set(typeToExtend, node = this.create(typeToExtend));
         return node;
     }

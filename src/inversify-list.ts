@@ -2,6 +2,7 @@ import * as inv from 'inversify';
 import * as gql from 'graphql';
 import {InversifyObjectTypeBuilder} from './object-builder';
 import { InversifyObjectConfig } from '.';
+import { named } from './utils';
 
 /**
  * Creates a GraphQL list of an inversify type
@@ -21,5 +22,6 @@ export function InversifyList<TSource, TContext>(ctor: inv.interfaces.Newable<In
             return new gql.GraphQLList(type);
         }
     }
-    return ThisList;
+
+    return named(ThisList, `List(${ctor.name})`);
 }

@@ -1,6 +1,6 @@
 {
   "name": "inversify-graphql",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "publisher": "Olivier Guimbal",
   "description": "Builds dependency-inverted GraphQL schemas with InversifyJS",
   "main": "bin/index.js",
