@@ -1,7 +1,7 @@
 import * as inv from 'inversify';
 import * as gql from 'graphql';
-import {TypeCache} from './type-cache';
 import { InversifyObjectConfig, InversifyFieldConfigMap } from './interfaces';
+import { ITypeCache } from './interfaces-private';
 
 export interface IInversifyExtensibleNode {
     buildType(): inv.interfaces.Newable<InversifyObjectTypeBuilder<any, any>>;
@@ -21,7 +21,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
     protected building?: boolean;
     protected extensions: 'all' | 'noDirect' | 'none'  = 'all';
 
-    @inv.inject(TypeCache) protected builders: TypeCache;
+    @inv.inject(ITypeCache) protected builders: ITypeCache;
     @inv.inject(ExtensibleSchemaSymbol) @inv.optional() private extensible: IExtSchema;
 
     abstract config() : InversifyObjectConfig<TSource, TContext>;
@@ -51,7 +51,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
                 ...cfg.fields,
             };
         }
-        
+
         // load extensions
         if (this.extensible) {
             const extList = this.extensible.getNoCreate(cfg.name, this.extensions);
@@ -89,20 +89,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
                     const field = ifcm[fieldName];
                     if (!field)
                         return; // ignore undefined fields
-                    let type: gql.GraphQLOutputType;
-                    if (typeof field.type === 'function') {
-                        type = this.builders.get(field.type).build();
-                    } else if ('inspect' in field.type) {
-                        type = field.type;
-                    } else {
-                        const fieldCfg = field.type;
-                        class InlineType extends InversifyObjectTypeBuilder<any, any> {
-                            config(): InversifyObjectConfig<any, any> {
-                                return fieldCfg;
-                            }
-                        }
-                        type = this.builders.get(InlineType).build();
-                    }
+                    const type = this.builders.buildType(field.type);
                     builtMap[fieldName] = {
                         ...field,
                         type: type,
@@ -110,7 +97,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
                 });
             return builtMap;
         }
-        
+
         // retreive fields
         let builtFields: gql.Thunk<gql.GraphQLFieldConfigMap<TSource, TContext>>;
         if (cfg.fields instanceof Array) {
@@ -133,7 +120,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
         } else
             builtFields = buildField(cfg.fields);
 
-        
+
         // return real object type
         this.built = new gql.GraphQLObjectType({
             ...cfg,

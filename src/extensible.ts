@@ -3,7 +3,7 @@ import { InversifyPartialMap } from './partial-map';
 import { GraphQLSchema } from 'graphql';
 import { inversifySchema } from './build';
 import { IInversifyExtensibleNode, InversifyObjectTypeBuilder, ExtensibleSchemaSymbol, IExtSchema } from './object-builder';
-import { TypeCache } from './type-cache';
+import { ITypeCache } from './interfaces-private';
 import { InversifyObjectConfig, InversifyFieldList, InversifySchemaConfig, IInversifyExtensibleSchema } from './interfaces';
 import { InversifySchemaBuilder } from './schema-builder';
 import { named } from './utils';
@@ -125,8 +125,8 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
 
         const that = this;
         class Temp extends InversifySchemaBuilder {
-            
-            @inject(TypeCache) protected builders: TypeCache;
+
+            @inject(ITypeCache) protected builders: ITypeCache;
 
             schema(): InversifySchemaConfig {
                 return {

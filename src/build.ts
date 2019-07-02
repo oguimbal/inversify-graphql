@@ -3,6 +3,7 @@ import * as gql from 'graphql';
 import { InversifySchemaBuilder } from './schema-builder';
 import { InversifySchemaConfig } from './interfaces';
 import { TypeCache } from './type-cache';
+import { ITypeCache } from './interfaces-private';
 
 export function inversifySchema(container: inv.Container, config: inv.interfaces.Newable<InversifySchemaBuilder> | InversifySchemaConfig): gql.GraphQLSchema {
 
@@ -10,7 +11,7 @@ export function inversifySchema(container: inv.Container, config: inv.interfaces
     const thisContainer = new inv.Container();
     thisContainer.parent = container;
     const types = new TypeCache(thisContainer);
-    thisContainer.bind(TypeCache).toConstantValue(types);
+    thisContainer.bind(ITypeCache).toConstantValue(types);
 
     let builtConfig: InversifySchemaConfig;
      if (typeof config === 'function') {

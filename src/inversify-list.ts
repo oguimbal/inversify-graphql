@@ -12,14 +12,18 @@ export function InversifyList<TSource, TContext>(ctor: inv.interfaces.Newable<In
     : inv.interfaces.Newable<InversifyObjectTypeBuilder<TSource, TContext>> {
 
     class ThisList extends InversifyObjectTypeBuilder<TSource, TContext> {
-        
+
+        private builtList: gql.GraphQLList<any>;
+
         config(): InversifyObjectConfig<TSource, TContext> {
             throw new Error('Invalid operation');
         }
-        
+
         build(): gql.GraphQLList<any> {
+            if (this.builtList)
+                return this.builtList;
             const type = this.builders.get(ctor).build();
-            return new gql.GraphQLList(type);
+            return this.builtList = new gql.GraphQLList(type);
         }
     }
 
