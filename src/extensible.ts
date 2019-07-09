@@ -102,17 +102,20 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
     getNoCreate<TSource = any>(extendedType: string, which: 'all' | 'noDirect' | 'none'): InversifyExtensibleNode<TSource, TContext>[] {
         if (which === 'none')
             return [];
-        const ret = which === 'noDirect'
-            ? []
-            : [this.nodes.get(extendedType)];
+        const ret: InversifyExtensibleNode<TSource>[] = [];
+        // push extensions of parents first
         for (const p of this.parents)
             ret.push(...p.getNoCreate(extendedType, 'all'));
+        // get parent extensions for roots
         for (const q of ['query', 'mutation', 'subscription']) {
             if (this[q].typeName === extendedType) {
                 for (const p of this.parents)
                     ret.push(p[q]);
             }
         }
+        // finally, override all previous extensions by extensions in this schema
+        if (which !== 'noDirect')
+            ret.push(this.nodes.get(extendedType));
         return ret.filter(x => !!x);
     }
 
