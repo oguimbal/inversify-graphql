@@ -76,6 +76,8 @@ export interface IInversifyExtensibleSchema<TContext = any> {
     get<TSource = any>(typeToExtend: string): IInversifyExtensibleNode<TSource, TContext>;
     /** Concatenate extensions */
     concat(...otherSchema: this[]): this;
+    /** Add other orphan types */
+    addTypes(...additionalTypes: gql.GraphQLNamedType[]): this;
 
     /** Build the generated schema */
     build(): gql.GraphQLSchema;

@@ -1,6 +1,6 @@
 import { interfaces, Container, inject, typeConstraint, injectable } from 'inversify';
 import { InversifyPartialMap } from './partial-map';
-import { GraphQLSchema } from 'graphql';
+import { GraphQLSchema, GraphQLNamedType } from 'graphql';
 import { inversifySchema } from './build';
 import { IInversifyExtensibleNode, InversifyObjectTypeBuilder, ExtensibleSchemaSymbol, IExtSchema } from './object-builder';
 import { ITypeCache } from './interfaces-private';
@@ -65,13 +65,14 @@ export class InversifyExtensibleNode<TSource = any, TContext = any> implements I
 
 
 
-export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
+export class InversifyExtensibleSchema<TContext = any> implements IExtSchema, IInversifyExtensibleSchema<TContext> {
     readonly query: InversifyExtensibleNode<void, TContext>;
     readonly mutation: InversifyExtensibleNode<void, TContext>;
     readonly subscription: InversifyExtensibleNode<void, TContext>;
     readonly nodes = new Map<string, InversifyExtensibleNode<any, TContext>>();
     container: Container;
     private parents:  this[] = [];
+    private orphanTypes: GraphQLNamedType[] = [];
 
     constructor(name: string, container: Container) {
         const c = this.container = new Container();
@@ -97,6 +98,11 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
         if (!node)
             this.nodes.set(typeToExtend, node = this.create(typeToExtend));
         return node;
+    }
+
+    addTypes(...additionalTypes: GraphQLNamedType[]) {
+        this.orphanTypes.push(...additionalTypes);
+        return this;
     }
 
     getNoCreate<TSource = any>(extendedType: string, which: 'all' | 'noDirect' | 'none'): InversifyExtensibleNode<TSource, TContext>[] {
@@ -136,6 +142,7 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema {
                     query:  that.query.buildType(),
                     mutation: that.mutation.buildType(),
                     subscription:  that.subscription.buildType(),
+                    types: that.orphanTypes,
                 }
             }
         }
