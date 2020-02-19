@@ -1,6 +1,7 @@
-import { InversifySchemaBuilder, InversifyList, InversifySchemaConfig, InversifyObjectTypeBuilder, InversifyObjectConfig } from '../src';
+import { InversifySchemaBuilder, InversifyList, InversifySchemaConfig, InversifyObjectTypeBuilder, InversifyObjectConfig } from '../../src';
 import { inject, injectable } from 'inversify';
 import { GraphQLInt, GraphQLString } from 'graphql';
+import { GString, GList } from '../../src/shortcuts';
 
 /** Fake context class */
 export class MyContext {
@@ -47,7 +48,7 @@ export class MyRootQuery extends InversifyObjectTypeBuilder<void, MyContext> {
     config(): InversifyObjectConfig<void, MyContext> {
         return {
             name: 'MyRoot',
-            // nb: "fields" supports 'partial roots', enabling you to describe one object in multiple separate builders 
+            // nb: "fields" supports 'partial roots', enabling you to describe one object in multiple separate builders
             //  fields: [PartialRoot1, PartialRoot2],
             fields: {
               // compatible with classic GraphQL objects/types
@@ -62,7 +63,7 @@ export class MyRootQuery extends InversifyObjectTypeBuilder<void, MyContext> {
               },
               // use InversifiedList to build a GraphQLList of an inversified type.
               inversifiedListField: {
-                type: InversifyList(MyType),
+                type: GList(MyType),
                 resolve: () => this.dependency.getAll()
               }
             }
@@ -74,7 +75,7 @@ export class MyRootQuery extends InversifyObjectTypeBuilder<void, MyContext> {
  * A type definition that has 'string' as context
  */
 export class MyType extends InversifyObjectTypeBuilder<string, MyContext> {
-    
+
     // Injected dependency, usable in our resolve() function
     @inject(MyDependency) dependency: MyDependency;
 

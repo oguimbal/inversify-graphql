@@ -4,9 +4,9 @@
         {
           "type": "node",
           "request": "launch",
-          "name": "Launch sample",
+          "name": "Launch minimal sample",
           "cwd": "${workspaceFolder}",
-          "args": ["${workspaceFolder}/sample/index.ts"],
+          "args": ["${workspaceFolder}/sample/minimal/index.ts"],
           "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
           "protocol": "inspector",
           "sourceMaps": true,
@@ -31,4 +31,4 @@
         ],
         }
     ]
-}  
+}

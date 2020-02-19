@@ -1,6 +1,6 @@
 import * as inv from 'inversify';
 import * as gql from 'graphql';
-import { InversifyObjectConfig, InversifyFieldConfigMap } from './interfaces';
+import { InversifyObjectConfig, InversifyFieldConfigMap, InversifyInterfaceConfig } from './interfaces';
 import { ITypeCache } from './interfaces-private';
 
 export interface IInversifyExtensibleNode {
@@ -15,21 +15,19 @@ export interface IExtSchema {
 
 
 @inv.injectable()
-export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
+export abstract class InversifyObjectTypeBuilderBase<TSource
+    , TContext
+    , TConfig extends (InversifyObjectConfig<TSource, TContext> | InversifyInterfaceConfig<TSource, TContext>) & Object> {
 
-    protected built: gql.GraphQLObjectType;
     protected building?: boolean;
     protected extensions: 'all' | 'noDirect' | 'none'  = 'all';
 
     @inv.inject(ITypeCache) protected builders: ITypeCache;
     @inv.inject(ExtensibleSchemaSymbol) @inv.optional() private extensible: IExtSchema;
 
-    abstract config() : InversifyObjectConfig<TSource, TContext>;
+    abstract config(): TConfig;
 
-    build(): gql.GraphQLObjectType | gql.GraphQLList<any> {
-
-        if (this.built)
-            return this.built;
+    protected doBuildConfig() {
         if (this.building)
             throw new Error(`The type ${this.constructor.name} is involved in a circlar referenciation loop.
             If this is intended, please use the thunk version of 'fields' - i.e.  "fields: () => ({ /* field definition */ })`)
@@ -121,12 +119,26 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext> {
             builtFields = buildField(cfg.fields);
 
 
-        // return real object type
-        this.built = new gql.GraphQLObjectType({
+        delete this.building;
+        return {
             ...cfg,
             fields: builtFields,
-        });
-        delete this.building;
+        };
+    }
+}
+
+export abstract class InversifyObjectTypeBuilder<TSource, TContext>
+    extends InversifyObjectTypeBuilderBase<TSource, TContext, InversifyObjectConfig<TSource, TContext>> {
+
+    protected built: gql.GraphQLObjectType;
+
+    build() {
+        if (this.built)
+            return this.built;
+
+        const cfg = super.doBuildConfig();
+        // return real object type
+        this.built = new gql.GraphQLObjectType(cfg);
         return this.built;
     }
 }

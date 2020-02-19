@@ -6,27 +6,27 @@ import { named } from './utils';
 import { InversifyBuilder } from './interfaces';
 
 /**
- * Creates a GraphQL list of an inversify type
+ * Creates a GraphQLNonNull of an inversify type
  * @param ctor The type builder to make a list of
  */
-export function InversifyList<TSource, TContext>(ctor: inv.interfaces.Newable<InversifyBuilder<TSource, TContext>>)
+export function InversifyNonNull<TSource, TContext>(ctor: inv.interfaces.Newable<InversifyBuilder<TSource, TContext>>)
     : inv.interfaces.Newable<InversifyBuilder<TSource, TContext>> {
 
-    class ThisList extends InversifyObjectTypeBuilder<TSource, TContext> {
+    class ThisNotNull extends InversifyObjectTypeBuilder<TSource, TContext> {
 
-        private builtList: gql.GraphQLList<any>;
+        private builtNn: gql.GraphQLNonNull<any>;
 
         config(): InversifyObjectConfig<TSource, TContext> {
             throw new Error('Invalid operation');
         }
 
         build(): any {
-            if (this.builtList)
-                return this.builtList;
+            if (this.builtNn)
+                return this.builtNn;
             const type = this.builders.get(ctor).build();
-            return this.builtList = new gql.GraphQLList(type);
+            return this.builtNn = new gql.GraphQLNonNull(type);
         }
     }
 
-    return named(ThisList, `List(${ctor.name})`);
+    return named(ThisNotNull, `NotNull(${ctor.name})`);
 }

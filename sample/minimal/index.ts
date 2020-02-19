@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import express from 'express';
 import * as agql from 'apollo-server-express';
 import {Container} from 'inversify';
-import {inversifySchema} from '../src';
+import {inversifySchema} from '../../src';
 import { SchemaBuilder, MyContext, MyDependency } from './schema';
 
 const app = express()
@@ -24,4 +24,19 @@ diagSrv.applyMiddleware({
     cors: true,
 });
 
-app.listen(port, () => console.log(`Example app listening on  http://localhost:${port} !`))
+app.listen(port, () => console.log(`Example app listening on  http://localhost:${port} !
+
+Try the request:
+
+
+{
+    classicField,
+    inversifiedField {
+      len,
+      repeated
+    }
+    inversifiedListField {
+      len,
+      repeated
+    }
+  }`))

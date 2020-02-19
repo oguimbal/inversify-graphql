@@ -1,5 +1,5 @@
 import * as inv from 'inversify';
-import { InversifyType, InversifyObjectConfig, InversifyBuilder } from './interfaces';
+import { InversifyType, InversifyObjectConfig } from './interfaces';
 import { GraphQLOutputType } from 'graphql';
 import { InversifyObjectTypeBuilder } from './object-builder';
 import { ITypeCache } from './interfaces-private';

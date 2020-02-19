@@ -5,6 +5,7 @@ import { InversifyObjectTypeBuilder } from './object-builder';
 import { InversifyPartialMap } from './partial-map';
 import { InversifyUnionTypeBuilder } from './union-builder';
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue';
+import { InversifyInterfaceTypeBuilder } from './interface-builder';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
@@ -23,8 +24,9 @@ export interface InversifyFieldConfigMap<TSource, TContext> {
 
 export type InversifyInlineType<TContext> = InversifyObjectConfig<any, TContext>;
 
-export type InversifyBuilder<TSource, TContext> = InversifyObjectTypeBuilder<any, TContext>
-    | InversifyUnionTypeBuilder<any, TContext>;
+export type InversifyBuilder<TSource = any, TContext = any> = InversifyObjectTypeBuilder<any, TContext>
+    | InversifyUnionTypeBuilder<any, TContext>
+    | InversifyInterfaceTypeBuilder<any, TContext>;
 
 /** Types allowed as inversified types */
 export type InversifyType<TSource, TContext> =  | gql.GraphQLOutputType
@@ -52,6 +54,13 @@ export interface InversifyUnionConfig<TSource, TContext>
     extends Omit<gql.GraphQLUnionTypeConfig<TSource, TContext>, 'types' | 'resolveType'> {
 
     types: InversifyUnionTypeList<TSource, TContext>;
+    resolveType?: Maybe<InversifyTypeResolver<TSource, TContext>>;
+}
+
+export interface InversifyInterfaceConfig<TSource, TContext>
+    extends Omit<gql.GraphQLInterfaceTypeConfig<TSource, TContext>, 'fields' | 'resolveType'> {
+
+    fields: InversifyFieldList<TSource, TContext>;
     resolveType?: Maybe<InversifyTypeResolver<TSource, TContext>>;
 }
 
