@@ -1,18 +1,17 @@
 {
   "name": "inversify-graphql",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "Olivier Guimbal",
   "description": "Builds dependency-inverted GraphQL schemas with InversifyJS",
-  "main": "bin/index.js",
-  "types": "bin/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "rimraf bin && tsc -p tsconfig.build.json",
     "test": "mocha -r ts-node/register test/**/*-spec.ts",
     "sample": "node -r ts-node/register sample/minimal/index.ts",
     "sample-complex": "node -r ts-node/register sample/complex-types/index.ts",
-    "publish-please": "npm run build && publish-please",
-    "prepublishOnly": "publish-please guard"
+    "release": "npm run build && cp package.json bin/package.json && npm publish bin"
   },
   "repository": {
     "type": "git",
@@ -44,8 +43,8 @@
     "inversify": "5.0.1",
     "mocha": "5.2.0",
     "node-ts": "^2.1.2",
-    "publish-please": "^5.4.3",
     "reflect-metadata": "^0.1.12",
+    "rimraf": "^3.0.2",
     "ts-node": "^7.0.1",
     "tslint": "5.9.1",
     "typescript": "^3.7.5"
