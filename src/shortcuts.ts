@@ -79,7 +79,7 @@ export function GInterface<T = any, TContext = any>(cfg: GraphQLInterfaceTypeCon
 }
 
 /** Inversify interface */
-export function GInterfaceInv<T = any, TContext = any>(cfg: InversifyInterfaceConfig<T, TContext>) {
+export function GInterfaceInv<T = any, TContext = any>(cfg: InversifyInterfaceConfig<T, TContext>): interfaces.Newable<InversifyInterfaceTypeBuilder<T, TContext>> {
     @injectable()
     class QuickInversified extends InversifyInterfaceTypeBuilder<T, TContext> {
         config(): InversifyInterfaceConfig<T, TContext> {

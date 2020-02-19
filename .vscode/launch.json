@@ -16,6 +16,21 @@
           "skipFiles": [
               "<node_internals>/**"
           ]
+        },{
+          "type": "node",
+          "request": "launch",
+          "name": "Launch complex sample",
+          "cwd": "${workspaceFolder}",
+          "args": ["${workspaceFolder}/sample/complex-types/index.ts"],
+          "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+          "protocol": "inspector",
+          "sourceMaps": true,
+          "env": {
+            "NODE_ENV": "development"
+          },
+          "skipFiles": [
+              "<node_internals>/**"
+          ]
         },
         {
         "name": "Debug Mocha Tests",

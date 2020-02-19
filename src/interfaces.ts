@@ -18,7 +18,7 @@ export interface InversifySchemaConfig
 /**
  * Inversify equivalent of GraphQLFieldConfigMap
  */
-export interface InversifyFieldConfigMap<TSource, TContext> {
+export interface InversifyFieldConfigMap<TSource, TContext = any> {
     [key: string]: InversifyFieldConfig<TSource, TContext>;
 }
 
@@ -43,10 +43,11 @@ export type InversifyFieldList<TSource, TContext> = gql.Thunk<InversifyFieldConf
 export type InversifyUnionTypeList<TSource, TContext> = gql.Thunk<InversifyType<TSource, TContext>[]>;
 
 export interface InversifyObjectConfig<TSource, TContext>
-    extends Omit<gql.GraphQLObjectTypeConfig<TSource, TContext>, 'fields'> {
+    extends Omit<gql.GraphQLObjectTypeConfig<TSource, TContext>, 'fields' | 'interfaces'> {
     /**
      * Fields can be either a map, or an array of partial map builder
      */
+    interfaces?: InversifyUnionTypeList<TSource, TContext>;
     fields: InversifyFieldList<TSource, TContext>;
 }
 

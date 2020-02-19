@@ -11,7 +11,9 @@ Build dependency-inverted GraphQL schemas with [InversifyJS](https://github.com/
 
 # Quickstart
 
-See the [sample app](sample/README.md) in this repository
+See:
+- the [sample app](sample/minimal/README.md) for a minimal sample
+- the [complex types app](sample/complex-types/README.md) to dive inito more complex inversified types
 
 
 # Usage
@@ -48,7 +50,7 @@ export class MyRootQuery extends InversifyObjectTypeBuilder<void, MyContext> {
     config(): InversifyObjectConfig<void, MyContext> {
         return {
             name: 'MyRoot',
-            // nb: "fields" supports 'partial roots', enabling you to describe one object in multiple separate builders 
+            // nb: "fields" supports 'partial roots', enabling you to describe one object in multiple separate builders
             //  fields: [PartialRoot1, PartialRoot2],
             fields: {
               // compatible with classic GraphQL objects/types
@@ -75,7 +77,7 @@ export class MyRootQuery extends InversifyObjectTypeBuilder<void, MyContext> {
 ```typescript
 // === MyType definition ==
 export class MyType extends InversifyObjectTypeBuilder<MyEntity, MyContext> {
-    
+
     // Injected dependency, usable in our resolve() function
     @inject(MyDependency) dependency: MyDependency;
 
@@ -93,7 +95,7 @@ You can define sub-types "inline" (cleaner syntax)
 
 ```typescript
 export class MyType extends InversifyObjectTypeBuilder<MyEntity, MyContext> {
-    
+
     // Injected dependency, usable in our resolve() function
     @inject(MyDependency) dependency: MyDependency;
 
@@ -117,6 +119,13 @@ export class MyType extends InversifyObjectTypeBuilder<MyEntity, MyContext> {
     }
 }
 ```
+
+
+# Handy shortcuts
+
+If like me, you're annoyed with those very long names like `new GraphQLList(new GraphQLNonNull(GraphQLString)))`, you can use the `inversify-graphql/shortcuts` helpers to turn them into  `GList(NN(GString))`.
+
+**nb:** shortcuts are compatible with inversified types ;)
 
 # Modular schema definiton
 

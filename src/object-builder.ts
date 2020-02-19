@@ -50,6 +50,28 @@ export abstract class InversifyObjectTypeBuilderBase<TSource
             };
         }
 
+        // resolve types
+        // deep copy item (this.config() might return a constant => must not be modified)
+            let interfaces: gql.Thunk<gql.GraphQLObjectType[]>;
+        if ('interfaces' in cfg) {
+            // typescript wont do the cast automatically :(
+            const cfgo = cfg as InversifyObjectConfig<TSource, TContext>;
+            if (typeof cfgo.interfaces === 'function') {
+                const cpy = cfgo.interfaces;
+                cfgo.interfaces = () => [ ...cpy() ];
+            } else if (cfgo.interfaces instanceof Array) {
+                cfgo.interfaces = [...cfgo.interfaces];
+            }
+
+            // map types
+            if (typeof cfgo.interfaces === 'function') {
+                const cpy = cfgo.interfaces;
+                interfaces = () => cpy().map(x => <gql.GraphQLObjectType> this.builders.buildType(x));
+            } else {
+                interfaces = cfgo.interfaces.map(x =>  <gql.GraphQLObjectType> this.builders.buildType(x));
+            }
+        }
+
         // load extensions
         if (this.extensible) {
             const extList = this.extensible.getNoCreate(cfg.name, this.extensions);
@@ -122,12 +144,13 @@ export abstract class InversifyObjectTypeBuilderBase<TSource
         delete this.building;
         return {
             ...cfg,
+            interfaces,
             fields: builtFields,
         };
     }
 }
 
-export abstract class InversifyObjectTypeBuilder<TSource, TContext>
+export abstract class InversifyObjectTypeBuilder<TSource, TContext = any>
     extends InversifyObjectTypeBuilderBase<TSource, TContext, InversifyObjectConfig<TSource, TContext>> {
 
     protected built: gql.GraphQLObjectType;
@@ -136,7 +159,7 @@ export abstract class InversifyObjectTypeBuilder<TSource, TContext>
         if (this.built)
             return this.built;
 
-        const cfg = super.doBuildConfig();
+        const cfg = super.doBuildConfig() as any;
         // return real object type
         this.built = new gql.GraphQLObjectType(cfg);
         return this.built;

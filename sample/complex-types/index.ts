@@ -3,14 +3,15 @@ import express from 'express';
 import * as agql from 'apollo-server-express';
 import {Container} from 'inversify';
 import {inversifySchema} from '../../src';
-import { SchemaBuilder, MyContext, MyDependency } from './schema';
+import { SchemaBuilder } from './schema';
+import { MyDependency, MyContext } from './services';
 
 const app = express()
 const port = 3000
 
 // bind some fake dependencies
 const container = new Container();
-container.bind(MyDependency).toConstantValue(new MyDependency(['Hello', 'World']));
+container.bind(MyDependency).toConstantValue(new MyDependency());
 
 // create the graphql server
 const diagSrv = new agql.ApolloServer({
@@ -30,13 +31,13 @@ Try the request:
 
 
 {
-  classicField,
-  inversifiedField {
-    len,
-    repeated
-  }
-  inversifiedListField {
-    len,
-    repeated
-  }
-}`))
+    classicField,
+    inversifiedField {
+      len,
+      repeated
+    }
+    inversifiedListField {
+      len,
+      repeated
+    }
+  }`))
