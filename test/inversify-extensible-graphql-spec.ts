@@ -3,8 +3,9 @@ import 'mocha';
 import { expect } from 'chai';
 import * as inv from 'inversify';
 import * as gql from 'graphql';
-import {inversifySchema, extensibleSchema, InversifyPartialMap, IInversifyExtensibleSchema} from '../src';
-import { SchemaBuilder, schemaDefinition, Dependency, PartialRoot1, PartialRoot2, RootQuery, Type2 } from './types';
+import { inversifySchema, extensibleSchema, InversifyPartialMap, IInversifyExtensibleSchema, IInversifyExtensibleNode } from '../src';
+import { SchemaBuilder, schemaDefinition, Dependency, PartialRoot1, PartialRoot2, RootQuery, Type2, Type1 } from './types';
+import { InversifyObjectTypeBuilderBase } from '../src/object-builder';
 
 
 describe('graphql-inversify-extensible', () => {
@@ -12,7 +13,7 @@ describe('graphql-inversify-extensible', () => {
     let container: inv.Container;
     let builder: IInversifyExtensibleSchema;
     beforeEach(() => {
-        container = new  inv.Container();
+        container = new inv.Container();
         container.bind(Dependency).toSelf().inSingletonScope();
         builder = extensibleSchema('XX', container);
     })
@@ -46,13 +47,13 @@ describe('graphql-inversify-extensible', () => {
         const fields2 = rootQuery2.getFields();
         const keys2 = Object.keys(fields2);
         expect(keys2.length).to.equal(2, 'Expecting 3 fields on root');
-        
-        
-        const type2_1 = <gql.GraphQLObjectType> fields.partial2type2.type;
-        const type2_2 = <gql.GraphQLObjectType> fields2.partial2type2.type;
+
+
+        const type2_1 = <gql.GraphQLObjectType>fields.partial2type2.type;
+        const type2_2 = <gql.GraphQLObjectType>fields2.partial2type2.type;
         expect(type2_1 === type2_2).to.equal(false, 'Should have rebuilt this type');
     })
-    
+
     it('builds schema from builder', () => {
         builder.query.merge(PartialRoot1, PartialRoot2);
         const schema = builder.build();
@@ -68,16 +69,16 @@ describe('graphql-inversify-extensible', () => {
         expect(fields.partial2type2.type).to.be.instanceof(gql.GraphQLObjectType);
         expect(fields.partial2String.type).to.equal(gql.GraphQLString);
 
-        const type1 = <gql.GraphQLObjectType> fields.partial1type1.type;
-        const type2 = <gql.GraphQLObjectType> fields.partial2type2.type;
+        const type1 = <gql.GraphQLObjectType>fields.partial1type1.type;
+        const type2 = <gql.GraphQLObjectType>fields.partial2type2.type;
 
         // check Type1
         fields = type1.getFields();
         expect(Object.keys(fields)).to.deep.equal(['type2list']);
         expect(fields.type2list.type).to.be.instanceof(gql.GraphQLList);
-        const lst = <gql.GraphQLList<any>> fields.type2list.type;
+        const lst = <gql.GraphQLList<any>>fields.type2list.type;
         expect(lst.ofType).to.equal(type2, 'Expecting to have a list of Type2');
-        
+
         // check Type2
         fields = type2.getFields();
         expect(Object.keys(fields)).to.deep.equal(['self', 'type1']);
@@ -94,13 +95,14 @@ describe('graphql-inversify-extensible', () => {
             }
         }
     }
-    
-    it('lets you extend a type', () => {
+
+    function testExtend(typeToExtend: string | inv.interfaces.Newable<InversifyObjectTypeBuilderBase<any, any, any>>) {
+
         builder.query.merge(PartialRoot1, PartialRoot2);
-        builder.get('Type1').merge(PartialExtension);
+        builder.get(typeToExtend).merge(PartialExtension);
         const schema = builder.build();
         const rootQuery = schema.getQueryType();
-        
+
         // check root type
         let fields = rootQuery.getFields();
         const keys = Object.keys(fields);
@@ -110,8 +112,19 @@ describe('graphql-inversify-extensible', () => {
         expect(fields.partial2String.type).to.equal(gql.GraphQLString);
 
         // check that Type1 has been extended
-        const type1 = <gql.GraphQLObjectType> fields.partial1type1.type;
+        const type1 = <gql.GraphQLObjectType>fields.partial1type1.type;
         fields = type1.getFields();
         expect(Object.keys(fields)).to.deep.equal(['type2list', 'extension']);
+    }
+
+    it('lets you extend a type by name', () => {
+        testExtend('Type1');
+    });
+
+
+
+
+    it('lets you extend a type by ctor', () => {
+        testExtend(Type1);
     });
 });

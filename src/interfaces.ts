@@ -1,7 +1,7 @@
 import * as inv from 'inversify';
 import * as gql from 'graphql';
 import Maybe from 'graphql/tsutils/Maybe';
-import { InversifyObjectTypeBuilder } from './object-builder';
+import { InversifyObjectTypeBuilder, InversifyObjectTypeBuilderBase } from './object-builder';
 import { InversifyPartialMap } from './partial-map';
 import { InversifyUnionTypeBuilder } from './union-builder';
 import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue';
@@ -83,7 +83,7 @@ export interface IInversifyExtensibleSchema<TContext = any> {
     /** Enxtensible root subscription */
     readonly subscription: IInversifyExtensibleNode<void, TContext>;
     /** Get a type to extend by name */
-    get<TSource = any>(typeToExtend: string): IInversifyExtensibleNode<TSource, TContext>;
+    get<TSource = any>(typeToExtend: string | inv.interfaces.Newable<InversifyObjectTypeBuilderBase<TSource, TContext, any>>): IInversifyExtensibleNode<TSource, TContext>;
     /** Concatenate extensions */
     concat(...otherSchema: this[]): this;
     /** Add other orphan types */

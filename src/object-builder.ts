@@ -10,7 +10,7 @@ export interface IInversifyExtensibleNode {
 export const ExtensibleSchemaSymbol =  Symbol();
 
 export interface IExtSchema {
-    getNoCreate(extendedType: string, which: 'all' | 'noDirect' | 'none'): IInversifyExtensibleNode[];
+    getNoCreate(extendedType: string, ctor: any, which: 'all' | 'noDirect' | 'none'): IInversifyExtensibleNode[];
 }
 
 
@@ -74,7 +74,7 @@ export abstract class InversifyObjectTypeBuilderBase<TSource
 
         // load extensions
         if (this.extensible) {
-            const extList = this.extensible.getNoCreate(cfg.name, this.extensions);
+            const extList = this.extensible.getNoCreate(cfg.name, Object.getPrototypeOf(this).constructor, this.extensions);
             for (const extended of extList) {
                 const built = extended.buildType();
                 if (built) {

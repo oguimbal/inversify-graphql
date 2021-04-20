@@ -18,8 +18,8 @@ export abstract class InversifyInterfaceTypeBuilder<TSource, TContext>
         // return real object type
         this.built = new gql.GraphQLInterfaceType({
             ...cfg,
-            resolveType: async (value, ctx, info) => {
-                const ret = await cfg.resolveType(value, ctx, info);
+            resolveType: async (value, ctx, info, resolveInfo) => {
+                const ret = await cfg.resolveType(value, ctx, info, resolveInfo);
                 if (!ret)
                     return null;
                 if (typeof ret === 'string') {

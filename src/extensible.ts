@@ -2,7 +2,7 @@ import { interfaces, Container, inject, typeConstraint, injectable } from 'inver
 import { InversifyPartialMap } from './partial-map';
 import { GraphQLSchema, GraphQLNamedType } from 'graphql';
 import { inversifySchema } from './build';
-import { IInversifyExtensibleNode, InversifyObjectTypeBuilder, ExtensibleSchemaSymbol, IExtSchema } from './object-builder';
+import { IInversifyExtensibleNode, InversifyObjectTypeBuilder, ExtensibleSchemaSymbol, IExtSchema, InversifyObjectTypeBuilderBase } from './object-builder';
 import { ITypeCache } from './interfaces-private';
 import { InversifyObjectConfig, InversifyFieldList, InversifySchemaConfig, IInversifyExtensibleSchema } from './interfaces';
 import { InversifySchemaBuilder } from './schema-builder';
@@ -14,7 +14,7 @@ export class InversifyExtensibleNode<TSource = any, TContext = any> implements I
     private readonly extensions: interfaces.Newable<InversifyPartialMap<any, TContext>>[] = [];
     typeName: string;
     useParentExtensions = false;
-    for (name: string) {
+    for(name: string) {
         this.typeName = name;
         return this;
     }
@@ -69,9 +69,9 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema, II
     readonly query: InversifyExtensibleNode<void, TContext>;
     readonly mutation: InversifyExtensibleNode<void, TContext>;
     readonly subscription: InversifyExtensibleNode<void, TContext>;
-    readonly nodes = new Map<string, InversifyExtensibleNode<any, TContext>>();
+    readonly nodes = new Map<any, InversifyExtensibleNode<any, TContext>>();
     container: Container;
-    private parents:  this[] = [];
+    private parents: this[] = [];
     private orphanTypes: GraphQLNamedType[] = [];
 
     constructor(name: string, container: Container) {
@@ -88,15 +88,16 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema, II
         }
     }
 
-    private create(typeName: string) {
+    private create(typeName: any) {
         return this.container.resolve<InversifyExtensibleNode<void, TContext>>(InversifyExtensibleNode)
-            .for(typeName)
+            .for(typeof typeName === 'string' ? typeName : null);
     }
 
-    get<TSource = any>(typeToExtend: string): InversifyExtensibleNode<TSource, TContext> {
+    get<TSource = any>(typeToExtend: string | interfaces.Newable<InversifyObjectTypeBuilderBase<TSource, TContext, any>>): InversifyExtensibleNode<TSource, TContext> {
         let node = this.nodes.get(typeToExtend);
-        if (!node)
+        if (!node) {
             this.nodes.set(typeToExtend, node = this.create(typeToExtend));
+        }
         return node;
     }
 
@@ -105,13 +106,14 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema, II
         return this;
     }
 
-    getNoCreate<TSource = any>(extendedType: string, which: 'all' | 'noDirect' | 'none'): InversifyExtensibleNode<TSource, TContext>[] {
+    getNoCreate<TSource = any>(extendedType: string, ctor: any, which: 'all' | 'noDirect' | 'none'): InversifyExtensibleNode<TSource, TContext>[] {
         if (which === 'none')
             return [];
         const ret: InversifyExtensibleNode<TSource>[] = [];
         // push extensions of parents first
-        for (const p of this.parents)
-            ret.push(...p.getNoCreate(extendedType, 'all'));
+        for (const p of this.parents) {
+            ret.push(...p.getNoCreate(extendedType, ctor, 'all'));
+        }
         // get parent extensions for roots
         for (const q of ['query', 'mutation', 'subscription']) {
             if (this[q].typeName === extendedType) {
@@ -120,8 +122,10 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema, II
             }
         }
         // finally, override all previous extensions by extensions in this schema
-        if (which !== 'noDirect')
+        if (which !== 'noDirect') {
             ret.push(this.nodes.get(extendedType));
+            ret.push(this.nodes.get(ctor));
+        }
         return ret.filter(x => !!x);
     }
 
@@ -139,9 +143,9 @@ export class InversifyExtensibleSchema<TContext = any> implements IExtSchema, II
 
             schema(): InversifySchemaConfig {
                 return {
-                    query:  that.query.buildType(),
+                    query: that.query.buildType(),
                     mutation: that.mutation.buildType(),
-                    subscription:  that.subscription.buildType(),
+                    subscription: that.subscription.buildType(),
                     types: that.orphanTypes,
                 }
             }
